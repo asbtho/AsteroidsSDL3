@@ -6,10 +6,6 @@ public:
     Object();
     ~Object();
 
-	//void update();
-	//void render();
-	//void clean();
-
     float x;
     float y;
     float dx;

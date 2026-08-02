@@ -24,9 +24,13 @@ void GameEngine::init(const char* title, int width, int height) {
 			std::cout << "Renderer created!" << std::endl;
 		}
 
-		scoreFont = TTF_OpenFont("ARCADECLASSIC.ttf", 13.0f);
+		scoreFont = TTF_OpenFont("ARCADECLASSIC.TTF", 13.0f);
+		if (scoreFont) {
+			std::cout << "Font loaded!" << std::endl;
+		}
 
 		isRunning = true;
+		std::cout << "Init Complete!" << std::endl;
 	} else {
 		isRunning = false;
 	}
@@ -49,6 +53,10 @@ void GameEngine::init(const char* title, int width, int height) {
 	// Init game variables
 	updateScoreText();
 	resetGame();
+}
+
+void GameEngine::setWindowTitle(const char* title){
+	SDL_SetWindowTitle(window, title);
 }
 
 void GameEngine::handleEvents() {
@@ -352,7 +360,7 @@ bool GameEngine::isPointInsideCircle(float cx, float cy, float radius, float x, 
 
 void GameEngine::resetGame() {
 	vecAsteroids.clear();
-	vecBullets.clear();	
+	vecBullets.clear();
 
 	// Initialize asteroids
 	Object a1(20.0f, 20.0f, 8.0f, -6.0f, (int)16, 0.0f);

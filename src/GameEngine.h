@@ -29,6 +29,7 @@ public:
 	bool isPointInsideCircle(float cx, float cy, float radius, float x, float y);
 	void resetGame();
 	void updateScoreText();
+	void setWindowTitle(const char* title);
 
 private:
 	bool isRunning;
