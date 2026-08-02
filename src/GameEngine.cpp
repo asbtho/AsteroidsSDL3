@@ -13,7 +13,7 @@ void GameEngine::init(const char* title, int width, int height) {
 	if (SDL_Init(SDL_INIT_AUDIO || SDL_INIT_VIDEO || SDL_INIT_EVENTS) == 1 && TTF_Init() == 1) {
 		std::cout << "Subsystems initialized!..." << std::endl;
 
-		window = SDL_CreateWindow(title, width, height, 0);
+		window = SDL_CreateWindow(title, width, height, SDL_WINDOW_RESIZABLE);
 		if (window) {
 			std::cout << "Window created!" << std::endl;
 		}
@@ -33,15 +33,15 @@ void GameEngine::init(const char* title, int width, int height) {
 
 	// Set ship vector coordinates
 	vecModelShip = {
-		{ 0.0f, -5.0f },
-		{ -2.5f, +2.5f },
-		{ +2.5f, +2.5f }
+		{ 0.0f, -4.0f },
+		{ -2.0f, +2.0f },
+		{ +2.0f, +2.0f }
 	};
 
 	// Generate asteroid model coordinates (circle)
 	int verts = 20;
 	for (int i = 0; i < verts; i++){
-		float radius = 1.0f;
+		float radius = (float)rand() / (float)RAND_MAX * 0.4f + 0.8f; 
 		float a = ((float)i / (float)verts) * 6.28318f;
 		vecModelAsteroid.push_back(std::make_pair(sinf(a) * radius, cosf(a) * radius));
 	}
@@ -82,7 +82,7 @@ void GameEngine::handleEvents() {
 			if (event.key.scancode == SDL_SCANCODE_SPACE) {
 				if ( key_state[SPACE] == true ) {
 					// Fire bullet
-					Object b(player.x, player.y, 50.0f * sin(player.angle), -50.0f * cos(player.angle), 0, 0.0f);
+					Object b(player.x + (5.0f * sin(player.angle)), player.y - (5.0f * cos(player.angle)), 50.0f * sin(player.angle), -50.0f * cos(player.angle), 0, 0.0f);
 					vecBullets.push_back(b);
 				}
 				key_state[SPACE] = false;
@@ -130,6 +130,7 @@ void GameEngine::update(double elapsedTime) {
 	for (auto &a : vecAsteroids){
 		a.x += a.dx * elapsedTime;
 		a.y += a.dy * elapsedTime;
+		a.angle += 0.5f * elapsedTime;
 		wrapCoordinatesPoint(a.x, a.y, a.x, a.y);
 	}
 
@@ -198,24 +199,24 @@ void GameEngine::update(double elapsedTime) {
 }
 
 void GameEngine::render() {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-	//SDL_SetRenderDrawColor(renderer, 99, 102, 106, SDL_ALPHA_OPAQUE);	// Set window background color dark grey
+	SDL_SetRenderDrawColor(renderer, 99, 102, 106, SDL_ALPHA_OPAQUE);	// Set window background color dark grey
 	SDL_RenderClear(renderer);	// Clear screen with background color
 
-	//SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE); // set virtual window background color black
-	//SDL_RenderFillRect(renderer, NULL);
-
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE); // Set color WHITE
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE); // set virtual window background color black
+	SDL_RenderFillRect(renderer, NULL);
 
 	// Draw Score
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE); // WHITE
 	SDL_RenderTexture(renderer, scoreTexture, NULL, &scoreRect);
 
 	// Draw asteroids
+	SDL_SetRenderDrawColor(renderer, 255, 255, 0, SDL_ALPHA_OPAQUE); // YELLOW
 	for (auto &a : vecAsteroids){
 		drawWireFrameModel(vecModelAsteroid, a.x, a.y, a.angle, a.nSize);
 	}
 
 	// Draw bullets
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE); // WHITE
 	for (auto &b : vecBullets){
 		SDL_RenderPoint(renderer, b.x, b.y);
 	}
